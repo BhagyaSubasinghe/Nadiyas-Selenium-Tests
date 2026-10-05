@@ -1,5 +1,6 @@
 package tests;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -12,7 +13,7 @@ import org.testng.annotations.Test;
 
 import java.time.Duration;
 
-public class SelectSizeTest {
+public class AddToCart {
 
     WebDriver driver;
     WebDriverWait wait;
@@ -28,7 +29,7 @@ public class SelectSizeTest {
     }
 
     @Test
-    public void testSelectSize() {
+    public void testAddToCart() {
 
         wait.until(
                 ExpectedConditions.elementToBeClickable(By.linkText("WOMEN"))
@@ -46,34 +47,37 @@ public class SelectSizeTest {
                 )
         );
 
-        Assert.assertTrue(
-                driver.getCurrentUrl().toLowerCase().contains("product"),
-                "Product details page was not opened"
-        );
-
-        Assert.assertTrue(
-                driver.findElement(By.id("size")).isDisplayed(),
-                "Size dropdown is not displayed"
-        );
-
-        System.out.println("Size dropdown displayed successfully");
-
-        wait.until(
-                ExpectedConditions.elementToBeClickable(By.id("size"))
-        ).click();
+        driver.findElement(By.id("size")).click();
 
         driver.findElement(
                 By.cssSelector("#size option:nth-child(2)")
         ).click();
 
-        String selectedSize = driver.findElement(By.id("size"))
-                .getAttribute("value");
+        wait.until(
+                ExpectedConditions.elementToBeClickable(
+                        By.cssSelector(".add-cart")
+                )
+        ).click();
 
-        System.out.println("Selected Size: " + selectedSize);
+        Alert alert = wait.until(
+                ExpectedConditions.alertIsPresent()
+        );
 
-        Assert.assertFalse(
-                selectedSize.isEmpty(),
-                "Size was not selected"
+        System.out.println("Alert Message: " + alert.getText());
+
+        Assert.assertEquals(
+                alert.getText(),
+                "Product added to cart!",
+                "Unexpected alert message"
+        );
+
+        alert.accept();
+
+        System.out.println("Product added to cart successfully");
+
+        Assert.assertTrue(
+                driver.findElement(By.cssSelector(".add-cart")).isDisplayed(),
+                "Add to Cart button is not displayed"
         );
     }
 
